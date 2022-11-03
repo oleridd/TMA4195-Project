@@ -1,6 +1,6 @@
 import numpy as np
 
-def minmax(arr: np.ndarray) -> tuple[float]:
+def minmax(arr: np.ndarray):
     """
     Returns the min and max values of the given array.
 

@@ -1,3 +1,4 @@
+from typing import Callable
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as sci
@@ -35,9 +36,14 @@ class RandomWalk:
         Returns:
             Tensor with each particles position at each timestep
         """
-        pos = np.random.uniform(-1, 1, size=(Nstep, N, D))      # Unscaled contribution at each timestep
-        pos *= (step/np.linalg.norm(pos, axis=2)[:, :, None])  # Scaling contributions by step/||vector||. Broadcasting on last index.
-        pos = np.cumsum(pos, axis=0)                           # Summing contributions over time
+        if   ( hasattr(step, 'dist')          ): step = step.rvs(size=N)
+        elif ( isinstance(step, (int, float)) ): step = np.ones(step)
+        else: raise ValueError("Type of \"step\" is unrecognized")
+        
+        # pos: (t x N x D), where t is time
+        pos = np.random.uniform(-1, 1, size=(Nstep, N, D))             # Unscaled contribution at each timestep
+        pos *= (step[None, :]/np.linalg.norm(pos, axis=2))[:, :, None] # Scaling contributions by step/||vector||. Broadcasting on last index.
+        pos = np.cumsum(pos, axis=0)                                   # Summing contributions over time
         return pos
 
     

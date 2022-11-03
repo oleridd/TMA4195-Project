@@ -18,6 +18,8 @@ class RandomWalk:
             step  (float): Step length. Can be input as a suitable Scipy distribution.
             D     (int):   Amount of dimensions. Defaults to 3D.
         """
+        self._N = N
+        self._Nstep = Nstep
         self.__D = D
 
         self.__pos = self.__random_walk(N, Nstep, step, D)

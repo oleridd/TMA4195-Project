@@ -1,6 +1,6 @@
 import numpy as np
 
-from Numeric.RandomWalkSim import RandomWalk
+from RandomWalkSim import RandomWalk
 
 class NeuroRandomWalk(RandomWalk):
     

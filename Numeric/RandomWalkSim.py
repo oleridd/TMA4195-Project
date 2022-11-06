@@ -1,4 +1,3 @@
-from typing import Callable
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as sci
@@ -20,9 +19,9 @@ class RandomWalk:
         """
         self._N = N
         self._Nstep = Nstep
-        self.__D = D
+        self._D = D
 
-        self.__pos = self.__random_walk(N, Nstep, step, D)
+        self._pos = self.__random_walk(N, Nstep, step, D)
 
     
     def __random_walk(self, N: int, Nstep: int, step: float, D: int) -> np.ndarray:
@@ -49,7 +48,7 @@ class RandomWalk:
         return pos
 
     
-    def plot2D(self, timestep = "last") -> None:
+    def plot2D(self, timestep: str = "last") -> None:
         """
         Plots each dimension pair in a subplot.
 
@@ -58,28 +57,49 @@ class RandomWalk:
         Returns:
             None
         """
-        assert self.__D >= 2 # Must be at least 2D
+        assert self._D >= 2 # Must be at least 2D
 
         if ( timestep == "last" ):
             timestep = -1
 
-        fig, ax = plt.subplots(self.__D-1, self.__D-1, figsize=(12, 12))
+        fig, ax = plt.subplots(self._D-1, self._D-1, figsize=(12, 12))
 
-        for i in range(self.__D-1):
-            for j in range(i+1, self.__D):
-                cax = ax[i, j-i-1] if self.__D > 2 else ax
+        for i in range(self._D-1):
+            for j in range(i+1, self._D):
+                cax = ax[i, j-i-1] if self._D > 2 else ax
                 cax.plot(
-                    self.__pos[timestep, :, i],
-                    self.__pos[timestep, :, j],
+                    self._pos[timestep, :, i],
+                    self._pos[timestep, :, j],
                     'o'
                     )
                 cax.grid()
-                cax.set_xlim(minmax(1.1*self.__pos[-1, :, i])) # Always setting scale to that of the last timestep
-                cax.set_ylim(minmax(1.1*self.__pos[-1, :, j])) # This makes it easier to compare plots from different timesteps
+                cax.set_xlim(minmax(1.1*self._pos[-1, :, i])) # Always setting scale to that of the last timestep
+                cax.set_ylim(minmax(1.1*self._pos[-1, :, j])) # This makes it easier to compare plots from different timesteps
                 cax.set_title(f"$x_{i+1}$-$x_{j+1}$-plot")
                 cax.set_xlabel(f"$x_{i+1}$")
                 cax.set_ylabel(f"$x_{j+1}$")
+            
+    
+    def scatter(self, timestep: str = "last") -> None:
+        """
+        Generates a scatterplot in 2D or 3D. Requires that pos has
+        either 2 or 3 dimensions.
+        
+        Args:
+            timestep (int or str): Timestep to plot. Defaults to last.
+        Returns:
+            None
+        """
+        assert self._D in (2, 3)
+
+        if ( timestep == "last" ):
+            timestep = -1
+
+        ax = plt.figure().add_subplot(projection="2d" if self._D == 2 else "3d")
+        # print(len())
+        ax.scatter(*self._pos[timestep].T)
+
     
     @property
     def pos(self) -> np.ndarray:
-        return self.__pos
+        return self._pos

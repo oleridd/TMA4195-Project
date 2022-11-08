@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+Numeric/__pycache__/RandomWalkSim.cpython-310.pyc

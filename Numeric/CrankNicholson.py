@@ -5,6 +5,8 @@ numpy.set_printoptions(precision=3)
 # Solving the modelling equations numerically with Crank-Nicholson
 
 # Assumption 1: cr and crn=0 until the boundary, leaving the regular heat equation (diffusion) up until boundary
+# Assumption 2: Reaction happens quickly, st we may disregard diffusion 
+# Assumption 3: 
 
 # Initial conditions:
 # c(0,0)= 5000/A
@@ -32,7 +34,7 @@ def tridiag(v, d, w, N):
     e = np.ones(N)        # array [1,1,...,1] of length N
     A = v*np.diag(e[1:],-1)+d*np.diag(e)+w*np.diag(e[1:],1)
     return A
-
+    
 ## Crank nicholson solver
 def crank_nicholson(Q, f, T, R, N, M, K, sigma, r, c): 
     h = 1/M     # Stepsize in space

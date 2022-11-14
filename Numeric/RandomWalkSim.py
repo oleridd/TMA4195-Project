@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as sci
 
-from Utility import minmax
+from Numeric.Utility import minmax
 
 
 class RandomWalk:
@@ -21,10 +21,10 @@ class RandomWalk:
         self._Nstep = Nstep
         self._D = D
 
-        self._pos = self.__random_walk(N, Nstep, step, D)
+        self._pos = self._random_walk(N, Nstep, step, D)
 
     
-    def __random_walk(self, N: int, Nstep: int, step: float, D: int) -> np.ndarray:
+    def _random_walk(self, N: int, Nstep: int, step: float, D: int) -> np.ndarray:
         """
         Performs a random walk with uniform distribution in
         all directions.
@@ -39,12 +39,12 @@ class RandomWalk:
         """
         if   ( hasattr(step, 'dist')          ): step = step.rvs(size=N)
         elif ( isinstance(step, (int, float)) ): step = np.ones(step)
+        elif ( isinstance(step, np.ndarray)   ): pass
         else: raise ValueError("Type of \"step\" is unrecognized")
         
         # pos: (t x N x D), where t is time
-        pos = np.random.uniform(-1, 1, size=(Nstep, N, D))             # Unscaled contribution at each timestep
-        pos *= (step[None, :]/np.linalg.norm(pos, axis=2))[:, :, None] # Scaling contributions by step/||vector||. Broadcasting on last index.
-        pos = np.cumsum(pos, axis=0)                                   # Summing contributions over time
+        pos = np.random.uniform(-step[None, :, None], step[None, :, None], size=(Nstep, N, D)) # Unscaled contribution at each timestep
+        pos = np.cumsum(pos, axis=0)                                                     # Summing contributions over time
         return pos
 
     

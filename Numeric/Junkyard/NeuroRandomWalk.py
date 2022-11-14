@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Numeric.RandomWalkSim import RandomWalk
+from RandomWalkSim import RandomWalk
 
 
 class NeuroRandomWalk(RandomWalk):

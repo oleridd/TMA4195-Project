@@ -129,6 +129,7 @@ class NeuroRandomWalk(RandomWalk):
 
         ax.plot_surface(x_grid, y_grid, z_grid, alpha=0.5, color='red')
 
+
     @property
     def layers(self) -> np.ndarray:
         return self.__layers

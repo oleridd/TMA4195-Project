@@ -1,7 +1,5 @@
 import numpy as np
 
-from Numeric.RandomWalkSingleBoundary import RandomWalkSingleBoundary
-
 
 def minmax(arr: np.ndarray):
     """
@@ -15,7 +13,7 @@ def minmax(arr: np.ndarray):
     return np.min(arr), np.max(arr)
 
 
-def get_absorption_frac(sim: RandomWalkSingleBoundary, R: float, ε: float) -> float:
+def get_absorption_frac(sim, R: float, ε: float) -> float:
     """
     Given a RandomWalkSingleBoundary simulation, studies the pos variable
     to find the fraction of absorbed particles (particles that have reached)

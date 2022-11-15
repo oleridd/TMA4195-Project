@@ -34,20 +34,19 @@ class RandomWalkSingleBoundary(RandomWalk):
         Returns:
             Tensor with each particles position at each timestep
         """
-        if   ( hasattr(step, 'dist')          ): step = step.rvs(size=N)
-        elif ( isinstance(step, (int, float)) ): step = step*np.ones(N)
+        if   ( hasattr(step, 'dist')          ): step = step.rvs(size=(Nstep, N, D))
+        elif ( isinstance(step, (int, float)) ): step = step*np.ones((Nstep, N, D))
         elif ( isinstance(step, np.ndarray)   ): pass
         else: raise ValueError("Type of \"step\" is unrecognized")
         
         # pos: (t x N x D), where t is time
         pos = np.zeros((Nstep, N, D))
-        pos[:, :, :-1] = super()._random_walk(N, Nstep, step, D-1) # Calling super method for x and y
+        pos[:, :, :-1] = super()._random_walk(N, Nstep, step[:, :, :-1], D-1) # Calling super method for x and y
         for t in range(1, Nstep):
-            pos_prev = pos[t-1, :, -1]
-            pos[t, :, -1] = np.random.uniform(
-                np.maximum(                0, pos_prev - step), # Can't surpass the lower boundary (zero)
-                np.minimum(self.__z_boundary, pos_prev + step), # Can't surpass the upper boundary
-            )
+            new_z = pos[t-1, :, -1] + step[t, :, -1]
+            new_z[new_z < 0] = 0
+            new_z[new_z > self.__z_boundary] = self.__z_boundary
+            pos[t, :, -1] = new_z
 
         return pos
     

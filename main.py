@@ -1,6 +1,6 @@
 import scipy.stats as scistat
 import matplotlib.pyplot as plt
-from Numeric.NeuroRandomWalk import NeuroRandomWalk
+from Numeric.Junkyard.NeuroRandomWalk import NeuroRandomWalk
 
 
 def main() -> None:

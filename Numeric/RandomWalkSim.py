@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as sci
 
 from Numeric.Utility import minmax
 

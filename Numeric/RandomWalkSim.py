@@ -36,14 +36,13 @@ class RandomWalk:
         Returns:
             Tensor with each particles position at each timestep
         """
-        if   ( hasattr(step, 'dist')          ): step = step.rvs(size=N)
-        elif ( isinstance(step, (int, float)) ): step = np.ones(step)
+        if   ( hasattr(step, 'dist')          ): step = step.rvs(size=(Nstep, N, D))
+        elif ( isinstance(step, (int, float)) ): step = np.ones((Nstep, N, D))
         elif ( isinstance(step, np.ndarray)   ): pass
         else: raise ValueError("Type of \"step\" is unrecognized")
         
         # pos: (t x N x D), where t is time
-        pos = np.random.uniform(-step[None, :, None], step[None, :, None], size=(Nstep, N, D)) # Unscaled contribution at each timestep
-        pos = np.cumsum(pos, axis=0)                                                     # Summing contributions over time
+        pos = np.cumsum(step, axis=0) # Summing contributions over time
         return pos
 
     

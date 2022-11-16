@@ -1,10 +1,9 @@
-import scipy.stats as scistat
 import matplotlib.pyplot as plt
 from Numeric.plot_simple_diffusion_solution import plot_simple_diffusion_solution
 
 
 def main() -> None:
-    plot_simple_diffusion_solution(1)
+    plot_simple_diffusion_solution(3, N=100, M=300, P=250)
     plt.show()
 
 

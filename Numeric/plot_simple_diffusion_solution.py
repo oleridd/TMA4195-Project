@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_simple_diffusion_solution(t: float, h: float = 3, ξ: float = 25, r_0: float = 1, S: float = 1, N: int = 1000, M: int = 3000, P: int = 1000) -> None:
+def plot_simple_diffusion_solution(t: float, h: float = 3, ξ: float = 25, r_0: float = 1, S: float = 4, N: int = 1000, M: int = 3000, P: int = 1000) -> None:
     """
     Plots the concentration function below in a 3D projection.
 
@@ -18,20 +18,17 @@ def plot_simple_diffusion_solution(t: float, h: float = 3, ξ: float = 25, r_0: 
         None
     """
     R, Z = np.meshgrid(
-        np.linspace(0, h, N),
-        np.linspace(0, ξ, M)
+        np.linspace(0, ξ, M),
+        np.linspace(0, h, N)
     )
 
-    C = np.zeros((N, M))
-
-    # This is a slow solution, but I am tired :'(
-    for n in range(N):
-        for m in range(M):
-            C[n, m] = concentration(R[n, m], Z[n, m], t, h, ξ, r_0, S, P)
+    concentration_vectorized = np.vectorize(lambda r, z: concentration(r, z, t, h, ξ, r_0, S, P))
+    C = concentration_vectorized(R, Z)
     
     ax = plt.figure().add_subplot(projection="3d")
-    ax.plot(R, Z, C)
-
+    ax.plot_surface(R, Z, C)
+    ax.set_xlabel("$r$")
+    ax.set_ylabel("$z$")
 
 
 def concentration(r: float, z: float, t: float, h: float, ξ: float, r_0: float, S: float, P: int) -> float:
@@ -61,13 +58,16 @@ def concentration(r: float, z: float, t: float, h: float, ξ: float, r_0: float,
     """
     π, sin, cos = np.pi, np.sin, np.cos
 
-    m, n = np.arange(1, P), np.arange(P)
-    s_m = sin(m*π*r_0/ξ)*cos(m*π*r/ξ)*np.exp(t*(m*π/ξ)**2) # NOTE: Should be /m here
-    s_n =                cos(n*π*z/h)*np.exp(t*(n*π/h)**2)
-    
-    c = np.outer(s_m, s_n)*S/(π*r_0*h)
-    c[0] *= 1/4     # These values corespond to κ for 2D Fourier
-    c[0, :] *= 1/2
-    c[:, 0] *= 1/2
+    m, n = np.arange(P), np.arange(P)
+    s_m = cos(m*π*r/ξ)*np.exp(-t*(m*π/ξ)**2)
+    s_n = cos(n*π*z/h)*np.exp(-t*(n*π/h)**2)
+
+    s_m[0 ] *= π*r_0/ξ
+    s_m[1:] *= sin(m[1:]*π*r_0/ξ)/m[1:]
+
+    c = np.outer(s_m, s_n)*S/(4*π*r_0*h)
+    c[0   ] *= 4 # These values corespond to κ for 2D Fourier
+    c[0, :] *= 2
+    c[:, 0] *= 2
 
     return np.sum(c)

@@ -46,12 +46,13 @@ class RandomWalk:
         return pos
 
     
-    def plot2D(self, timestep: str = "last") -> None:
+    def plot2D(self, timestep: str = "last", **kwargs) -> None:
         """
         Plots each dimension pair in a subplot.
 
         Args:
             timestep (int or str): Timestep to plot. Defaults to last.
+            kwargs for plot function
         Returns:
             None
         """
@@ -68,7 +69,8 @@ class RandomWalk:
                 cax.plot(
                     self._pos[timestep, :, i],
                     self._pos[timestep, :, j],
-                    'o'
+                    'o',
+                    **kwargs
                     )
                 cax.grid()
                 cax.set_xlim(minmax(1.1*self._pos[-1, :, i])) # Always setting scale to that of the last timestep
@@ -78,13 +80,14 @@ class RandomWalk:
                 cax.set_ylabel(f"$x_{j+1}$")
             
     
-    def scatter(self, timestep: str = "last") -> None:
+    def scatter(self, timestep: str = "last", **kwargs) -> None:
         """
         Generates a scatterplot in 2D or 3D. Requires that pos has
         either 2 or 3 dimensions.
         
         Args:
             timestep (int or str): Timestep to plot. Defaults to last.
+            kwargs for scatter function
         Returns:
             None
         """
@@ -94,8 +97,7 @@ class RandomWalk:
             timestep = -1
 
         ax = plt.figure().add_subplot(projection="2d" if self._D == 2 else "3d")
-        # print(len())
-        ax.scatter(*self._pos[timestep].T)
+        ax.scatter(*self._pos[timestep].T, **kwargs)
 
     
     @property

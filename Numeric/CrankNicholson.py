@@ -12,8 +12,8 @@ numpy.set_printoptions(precision=3)
 # c(0,0)= 5000/A
 # c(x,0) =0 for x\neq 0
 # cr(15,0)=1000
-# crn(15,0)=0
-#cr(15,t)=500 for t\neq 0
+# crn(15,0)=0 
+# cr(15,t)=500 for t\neq 0
 
 #Reaction constants
 k_1 = 1e3-1e4

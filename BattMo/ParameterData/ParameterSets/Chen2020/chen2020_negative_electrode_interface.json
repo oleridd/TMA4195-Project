@@ -1,0 +1,13 @@
+{
+  "cmax": 33133,
+  "volumeFraction": 0.75,
+  "volumetricSurfaceArea": 383959,
+  "n": 1,
+  "Eak": 35000,
+  "k0": 6.716e-12,
+  "theta100": 0.88,
+  "theta0": 0.15,
+  "OCP" : { "type": "function",
+            "functionname" : "computeOCP_graphite_Chen",
+            "argumentlist" : ["cElectrode", "T", "cmax"]}
+}

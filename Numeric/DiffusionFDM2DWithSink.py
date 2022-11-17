@@ -14,12 +14,13 @@ class DiffusionFDM2DWithSink(DiffusionFDM2D):
     f ∈ [0, 1] (coresponding to the fraction of particles absorbed)
     """
 
-    def __init__(self, max_timestep: int, h: float, k: float, S: float, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None, sink_fnc: np.ndarray = None) -> None:
+    def __init__(self, max_timestep: int, h: float, k: float, κ: float = 8e-7, S: float = 500, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None, sink_fnc: np.ndarray = None) -> None:
         """
         Args:
             max_timestep (int): The maximum timestep
             h          (float): Spatial step in both z- and r direction
             k          (float): Timestep
+            κ          (float): Diffusion coefficient [m^2/s]
             S          (float): Conserved integral over c (the solution)
             N            (int): Amount of spatial points along the z-axis
             M            (int): Amount of spatial points along the r-axis
@@ -28,7 +29,7 @@ class DiffusionFDM2DWithSink(DiffusionFDM2D):
         Returns:
             None
         """
-        super().__init__(max_timestep, h, k, S, N, M, type, IC)
+        super().__init__(max_timestep, h, k, κ, S, N, M, type, IC)
         self.__S = S
         
         if sink_fnc is None: sink_fnc = lambda r, z: np.zeros((self._N, self._M))
@@ -66,7 +67,7 @@ class DiffusionFDM2DWithSink(DiffusionFDM2D):
             None
         """
         if ax is None: ax = plt.gca()
-        ax.plot(self.__sinked.sum(axis=(1, 2))/self.__S)
+        ax.plot(self._trange, self.__sinked.sum(axis=(1, 2))/self.__S)
         ax.set_xlabel("Timestep")
         ax.set_ylabel("Absorbed in sink")
         ax.grid()

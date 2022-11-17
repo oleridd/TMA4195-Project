@@ -40,11 +40,11 @@ def test_DiffusionFDM2DWithSink(timestep: int, h: float, k: float, N: int = 10, 
     """
     sink = np.zeros((N, M))
     sink[-1:, :int(0.25*M)] = 1
-    system = DiffusionFDM2DWithSink(max_timestep=timestep+1, h=h, k=k, S=25000, N=N, M=M, type=type, sink_fnc=sink)
+    system = DiffusionFDM2DWithSink(max_timestep=timestep+1, h=h, k=k, N=N, M=M, type=type, sink_fnc=sink)
     system.solve()
     print(f"Total fraction absorbed: {system.fraction_absorbed}")
 
     _, ax = plt.subplots(1, 2)
-    system.plot(timestep, slider=True, ax=ax[0])
+    system.plot(timestep, slider=False, ax=ax[0])
     system.plot_sinked(ax=ax[1])
     return system

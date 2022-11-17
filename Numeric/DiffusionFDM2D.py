@@ -9,12 +9,13 @@ class DiffusionFDM2D:
     Finite difference method for the diffusion equation in two dimensions.
     """
 
-    def __init__(self, max_timestep: int, h: float, k: float, S: float, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None) -> None:
+    def __init__(self, max_timestep: int, h: float, k: float, κ: float = 8e-7, S: float = 500, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None) -> None:
         """
         Args:
             max_timestep (int): The maximum timestep
             h          (float): Spatial step in both z- and r direction
             k          (float): Timestep
+            κ          (float): Diffusion coefficient [m^2/s]
             S          (float): Conserved integral over c (the solution)
             N            (int): Amount of spatial points along the z-axis
             M            (int): Amount of spatial points along the r-axis
@@ -26,6 +27,7 @@ class DiffusionFDM2D:
         self._max_timestep = max_timestep
         self.__h = h
         self.__k = k
+        self.__κ = κ
         self._N = N
         self._M = M
         self.__P = M*N # Total amount of gridpoints
@@ -38,6 +40,7 @@ class DiffusionFDM2D:
 
         self._rrange = np.arange(0, M*h, h)
         self._zrange = np.arange(0, N*h, h)
+        self._trange = np.arange(0, max_timestep*k, k)
 
     
     def __get_IC(self, S: float) -> np.ndarray:
@@ -94,7 +97,7 @@ class DiffusionFDM2D:
             System matrix A (constant with time)
         """
         A = np.zeros((self.__P, self.__P))
-        r = self.__k / self.__h**2
+        r = self.__κ*( self.__k / self.__h**2 )
 
         # Precalculating matrices to accelerate runtime
         matrix_bndry = self.__construct_submatrix(boundary=True )

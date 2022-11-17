@@ -4,7 +4,8 @@ from Numeric.plot_simple_diffusion_solution import plot_simple_diffusion_solutio
 
 
 def main() -> None:
-    system = test_DiffusionFDM2DWithSink(500, 0.01, 0.001, M=50, N=50, type="backward")
+    N, M = 50, 50
+    system = test_DiffusionFDM2DWithSink(50, h=15e-9/M, k=1e-9/500, M=M, N=N, type="backward")
     plt.show()
 
 

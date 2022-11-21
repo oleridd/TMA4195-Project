@@ -81,3 +81,51 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
 
     # Returning to retain slider functionality:
     return slider
+
+
+def plot_with_slider_2D(arrs: list, slider_labels: list, axis_to_plot: str = "x", xlabel: str = "x", ylabel: str = "y", ax: plt.Axes = None) -> None:
+    """
+    Given a list of ND arrays, plots each in a 2D plot with axes
+    for the dimensions that were not included.
+
+    Args:
+        arrs (list(ND Arrays)): List of arrays to plot in the same plot
+        axis_to_plot     (str): The axis that will be plotted in 2D (not included as a slider)
+        xlabel           (str)
+        ylabel           (str)
+    Returns:
+        None
+    """
+    # Initializing plots:
+    ax = plt.gca() if ax is None else ax
+    divider = make_axes_locatable(ax)
+    lines = [ax.plot(arrs[0], arr) for arr in arrs[1:]]
+
+
+    # Updating plot from sliders:
+    update_functions = []
+    for i, line in zip(range(1, len(axis_sizes)), lines):
+        def update(val):
+            line.set_ydata(val)
+        update_functions.append(update)
+
+
+    # Adding sliders:
+    axis_sizes = arrs[0].shape
+    sliders = []
+    for i, lab in zip(range(1, len(axis_sizes)), slider_labels):
+        slider_ax = divider.append_axes('top', size='5%', pad=0.05)
+        sliders.append(
+            Slider(
+                ax=slider_ax,
+                label=lab,
+                valmin=0,
+                valmax=axis_sizes[i],
+                valinit=0,
+                valstep=np.arange(axis_sizes[i])
+            )
+        )
+        sliders[-1].on_changed(update_functions[i-1])
+    
+
+    return sliders

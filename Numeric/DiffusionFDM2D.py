@@ -33,7 +33,7 @@ class DiffusionFDM2D:
         self.__P = M*N # Total amount of gridpoints
         assert type in ("forward", "backward")
 
-        self._A = self.__construct_matrix(type)
+        self._A = self._construct_matrix(type)
         self._solution = np.zeros((max_timestep, N, M))
         self._solution[0] = self.__get_IC(S) if IC is None else IC
         self._solved = False # True if solve() has been called
@@ -87,7 +87,7 @@ class DiffusionFDM2D:
         return -submatrix
 
 
-    def __construct_matrix(self, type: str) -> np.ndarray:
+    def _construct_matrix(self, type: str) -> np.ndarray:
         """
         Constructs the main updating matrix of the flattened system.
 

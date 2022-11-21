@@ -23,7 +23,7 @@ def plot_simple_diffusion_solution(t: float, h: float = 3, ξ: float = 25, r_0: 
         np.linspace(0, h, N)
     )
 
-    concentration_vectorized = np.vectorize(lambda r, z: concentration(r, z, t, h, ξ, r_0, S, P))
+    concentration_vectorized = np.vectorize(lambda r, z: concentration(t, r, z, h, ξ, r_0, S, P))
     C = concentration_vectorized(R, Z)
     
     ax = plt.figure().add_subplot(projection="3d")
@@ -32,7 +32,7 @@ def plot_simple_diffusion_solution(t: float, h: float = 3, ξ: float = 25, r_0: 
     ax.set_ylabel("$z$")
 
 
-def concentration(r: float, z: float, t: float, h: float, ξ: float, r_0: float, S: float, P: int, κ: float = 8e-7) -> float:
+def concentration(t: float, r: float, z: float, h: float, ξ: float, r_0: float, S: float, P: int, κ: float = 8e-7) -> float:
     """
     Solution to the diffusion equation on the form
     

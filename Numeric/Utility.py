@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from copy import deepcopy
 from matplotlib.widgets import Slider
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.ticker import LogFormatterMathtext
@@ -83,35 +84,38 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
     return slider
 
 
-def plot_with_slider_2D(arrs: list, slider_labels: list, axis_to_plot: str = "x", xlabel: str = "x", ylabel: str = "y", ax: plt.Axes = None) -> None:
+def plot_with_slider_2D(arrs: list, slider_labels: list, xrange: np.ndarray, xlabel: str = "x", ylabel: str = "y", ax: plt.Axes = None) -> None:
     """
     Given a list of ND arrays, plots each in a 2D plot with axes
     for the dimensions that were not included.
 
     Args:
         arrs (list(ND Arrays)): List of arrays to plot in the same plot
-        axis_to_plot     (str): The axis that will be plotted in 2D (not included as a slider)
+        crange      (1D array): Range of the x-axis
         xlabel           (str)
         ylabel           (str)
     Returns:
         None
     """
+    for lst in arrs: print(lst.shape)
     # Initializing plots:
     ax = plt.gca() if ax is None else ax
     divider = make_axes_locatable(ax)
-    lines = [ax.plot(arrs[0], arr) for arr in arrs[1:]]
+    lines = [ax.plot(xrange, arr[0]) for arr in arrs[1:]]
 
 
     # Updating plot from sliders:
+    axis_sizes = arrs[0].shape
     update_functions = []
-    for i, line in zip(range(1, len(axis_sizes)), lines):
+    for i in range(1, len(axis_sizes)):
+        j = deepcopy(i)
         def update(val):
-            line.set_ydata(val)
+            for k in range(len(arrs)):
+                lines[k].set_ydata(arrs[k].take(indices=val, axis=j))
         update_functions.append(update)
 
 
     # Adding sliders:
-    axis_sizes = arrs[0].shape
     sliders = []
     for i, lab in zip(range(1, len(axis_sizes)), slider_labels):
         slider_ax = divider.append_axes('top', size='5%', pad=0.05)

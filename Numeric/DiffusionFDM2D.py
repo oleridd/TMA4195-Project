@@ -31,7 +31,6 @@ class DiffusionFDM2D:
         self._N = N
         self._M = M
         self.__P = M*N # Total amount of gridpoints
-        assert type in ("forward", "backward")
 
         self._A = self._construct_matrix(type)
         self._solution = np.zeros((max_timestep, N, M))

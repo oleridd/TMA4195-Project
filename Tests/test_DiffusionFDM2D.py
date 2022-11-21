@@ -45,6 +45,6 @@ def test_DiffusionFDM2DWithSink(timestep: int, h: float, k: float, N: int = 10, 
     print(f"Total fraction absorbed: {system.fraction_absorbed}")
 
     _, ax = plt.subplots(1, 2)
-    system.plot(timestep, slider=False, ax=ax[0])
+    system.plot(timestep, slider=True, ax=ax[0])
     system.plot_sinked(ax=ax[1])
     return system

@@ -4,9 +4,9 @@ from Numeric.plot_simple_diffusion_solution import plot_simple_diffusion_solutio
 
 
 def main() -> None:
-    # N, M = 50, 50
-    # system = test_DiffusionFDM2DWithSink(50, h=15e-9/M, k=1e-9/500, M=M, N=N, type="backward")
-    plot_simple_diffusion_solution(1, N=25, M=60)
+    N, M = 25, 75
+    system = test_DiffusionFDM2D(50, h=15e-9/M, k=1e-9/500, M=M, N=N, type="backward")
+    # plot_simple_diffusion_solution(1, N=25, M=60)
     plt.show()
 
 

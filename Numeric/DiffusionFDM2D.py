@@ -87,17 +87,16 @@ class DiffusionFDM2D:
         return -submatrix
 
 
-    def _construct_matrix(self, type: str) -> np.ndarray:
+    def _construct_system_matrix(self) -> np.ndarray:
         """
-        Constructs the main updating matrix of the flattened system.
+        Constructs the system matrix for diffusion.
 
         Args:
-            type (string): Whether the method uses forward or backward FDM
+            None
         Returns:
             System matrix A (constant with time)
         """
         A = np.zeros((self.__P, self.__P))
-        r = self.__κ*( self.__k / self.__h**2 )
 
         # Precalculating matrices to accelerate runtime
         matrix_bndry = self.__construct_submatrix(boundary=True )
@@ -112,13 +111,29 @@ class DiffusionFDM2D:
             A[n1:n2, n0:n1] = np.identity(self._N)
             A[n0:n1, n1:n2] = np.identity(self._N)
         
+        return A
+
+        
+    def _construct_matrix(self, type: str):
+        """
+        Constructs the main updating matrix of the flattened system.
+
+        Args:
+            type (string): Whether the method uses forward or backward FDM
+        Returns:
+            System matrix A (constant with time)
+        """
+        # System matrix for diffusion:
+        A = self._construct_system_matrix()
+        r = self.__κ*( self.__k / self.__h**2 )
+
         # Returning the correct type of matrix
         if   type == "forward":
             return np.identity(self.__P) + r*A
         elif type == "backward":
             return np.linalg.solve(np.identity(self.__P) - r*A, np.identity(self.__P))
-
     
+
     def solve(self) -> None:
         """
         Solves the system for all timesteps.

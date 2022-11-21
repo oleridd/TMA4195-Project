@@ -29,5 +29,5 @@ class DiffusionReactionFDM2D(DiffusionFDM2D):
         if self.__has_diffusion:
             A = super()._construct_matrix(type)
         else:
-            A = np.identity(self.__P)
+            A = np.identity(self.__P) ##???
     

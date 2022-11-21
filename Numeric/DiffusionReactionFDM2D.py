@@ -23,10 +23,11 @@ class DiffusionReactionFDM2D(DiffusionFDM2D):
         """
         super().__init__(max_timestep, h, k, κ, S, N, M, type, IC)
         self.__has_diffusion = has_diffusion
-
-
+      
+    
     def _construct_matrix(self, type: str) -> np.ndarray:
         if self.__has_diffusion:
             A = super()._construct_matrix(type)
         else:
-            A = np.zeros((...))
+            A = np.identity(self.__P)
+    

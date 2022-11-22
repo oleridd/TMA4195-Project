@@ -1,6 +1,6 @@
 import numpy as np
 
-from Numeric.DiffusionFDM2D import DiffusionReactionFDM2D
+from Numeric.DiffusionReactionFDM2D import DiffusionReactionFDM2D
 
 class SolvingDiffusionReactionFDM2D():
     
@@ -18,8 +18,8 @@ class SolvingDiffusionReactionFDM2D():
         self.__SN=5000/(self.__r**2*np.pi*self.__h)
         self.__SR=(1000e-6)/self.__h
 
-        self.__IC_Rb=IC = np.zeros((self._N, self._M))
-        self.__IC_R=IC = np.zeros((self._N, self._M))
+        self.__IC_Rb=IC = np.zeros((self.__N, self.__M))
+        self.__IC_R=IC = np.zeros((self.__N, self.__M))
 
         m_r0 = int(0.25*self._M)
         n_ε  = max(int(0.01*self._N), 1)

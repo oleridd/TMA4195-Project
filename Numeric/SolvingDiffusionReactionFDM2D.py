@@ -30,6 +30,7 @@ class SolvingDiffusionReactionFDM2D():
         self.__R= DiffusionReactionFDM2D(self.__h, self.__k, self.__κ,self.__SR,self.__N,self.__M,IC=self.__IC_R,has_diffusion= False)
         self.__Rb= DiffusionReactionFDM2D(self.__h, self.__k, self.__κ,0,0,self.__M,IC=self.__IC_Rb,has_diffusion= False)
     
+    
     def solve(self):
         for t in range(1, self._max_timestep):
             self.__N._solution[t] = (( self.__N._A @ self.__N._solution[t-1].flatten() )-(self.__k1*np.cross(self.__N._solution[t-1].flatten(),self.__R._solution[t-1].flatten()))+(self.__k2*self.__Rb._solution[t-1].flatten())).reshape((self._N, self._M))

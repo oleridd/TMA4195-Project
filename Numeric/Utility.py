@@ -84,52 +84,90 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
     return slider
 
 
-def plot_with_slider_2D(arrs: list, slider_labels: list, xrange: np.ndarray, xlabel: str = "x", ylabel: str = "y", ax: plt.Axes = None) -> None:
+def plot_with_slider_2D(arrs: list, slider_labels: list, plot_labels: list, axis_to_plot: int, xrange: np.ndarray, ax: plt.Axes = None, xlabel: str = "", ylabel: str = "", **plot_kwargs) -> None:
     """
-    Given a list of ND arrays, plots each in a 2D plot with axes
-    for the dimensions that were not included.
+    Given a list of ND arrays, plots each array along a given axis, with sliders to
+    adjust the additional axes.
 
     Args:
-        arrs (list(ND Arrays)): List of arrays to plot in the same plot
-        crange      (1D array): Range of the x-axis
-        xlabel           (str)
-        ylabel           (str)
+        arrs    (list(ND Arrays)): List of arrays to plot in the same plot
+        slider_labels (list[str]): Labels for the sliders
+        plot_labels   (list[str]): Labels (legends) for the plots
+        axis_to_plot        (int): The axis to plot on the x-axis
+        xrange         (1D array): Range of the x-axis in the plot
+        ax      (Matplotlib Axes)
+        xlabel           (string)
+        ylabel           (string)
     Returns:
         None
     """
-    for lst in arrs: print(lst.shape)
+    # Assertions
+    axes = arrs[0].shape # Axes for all arrays
+    assert np.all([(arr.shape == axes) for arr in arrs])
+    assert len(axes) == len(slider_labels)+1
+    assert len(arrs) == len(plot_labels)
+    assert axes[axis_to_plot] == len(xrange)
+
+    
+    # Useful variables in function scope:
+    atp = axis_to_plot                                 # The axis to be plotted
+    current_indices = np.zeros(len(axes)-1, dtype=int) # The indices that are plotted (excluding axis_to_plot) at any time
+
+
     # Initializing plots:
     ax = plt.gca() if ax is None else ax
-    divider = make_axes_locatable(ax)
-    lines = [ax.plot(xrange, arr[0]) for arr in arrs[1:]]
-
-
-    # Updating plot from sliders:
-    axis_sizes = arrs[0].shape
-    update_functions = []
-    for i in range(1, len(axis_sizes)):
-        j = deepcopy(i)
-        def update(val):
-            for k in range(len(arrs)):
-                lines[k].set_ydata(arrs[k].take(indices=val, axis=j))
-        update_functions.append(update)
+    lines = [ax.plot(
+        xrange,
+        get_line_along_axis(arr, axis=atp, indices=current_indices),
+        label=lab,
+        **plot_kwargs
+        )[0] for arr, lab in zip(arrs, plot_labels)]
+    ax.legend()
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
 
     # Adding sliders:
     sliders = []
-    for i, lab in zip(range(1, len(axis_sizes)), slider_labels):
-        slider_ax = divider.append_axes('top', size='5%', pad=0.05)
+    divider = make_axes_locatable(ax) # Used to add slider axes
+    for i, lab in zip(range(1, len(axes)), slider_labels):
+        slider_ax = divider.append_axes('top', size='5%', pad=0.1)
         sliders.append(
             Slider(
                 ax=slider_ax,
                 label=lab,
                 valmin=0,
-                valmax=axis_sizes[i],
+                valmax=axes[i],
                 valinit=0,
-                valstep=np.arange(axis_sizes[i])
+                valstep=np.arange(axes[i])
             )
         )
-        sliders[-1].on_changed(update_functions[i-1])
-    
+
+
+    # Updating plot from sliders:
+    for i in range(1, len(axes)):
+        def update(val, i=i):
+            for k, line in enumerate(lines):
+                current_indices[i-1] = int(val)
+                line.set_ydata(get_line_along_axis(arrs[k], axis=atp, indices=current_indices))
+        sliders[i-1].on_changed(update)
+
 
     return sliders
+
+
+def get_line_along_axis(arr: np.ndarray, axis: int, indices: tuple) -> np.ndarray:
+    """
+    Given some ND array, an axis and a tuple of coordinates, retrieves
+    the line (1D array) along the given axis at the specific coordinates.
+
+    Args:
+        arr  (ND array): Array to retrieve from
+        axis      (int): The axis along which to retrieve a vector
+        indices (tuple): Indices denoting the line to retrieve
+    Returns:
+        1D array of the vector located at the specified line
+    """
+    slc = list(indices)
+    slc.insert(axis, slice(None))
+    return arr[tuple(slc)]

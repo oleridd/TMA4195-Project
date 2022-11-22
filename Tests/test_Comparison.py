@@ -29,26 +29,30 @@ def comparison(Nsteps: int, h: float, k: float, S: float = 100, N: int = 40, M: 
     system.solve()
     C_FDM = system.solution
 
+
     # Analytic:
-    ξ = (N-1)*h
-    T = (k-1)*Nsteps
+    ξ =      (N-1)*h
+    T = (Nsteps-1)*k
     r_0 = 0.25*ξ
-    rrange = np.linspace(0, ξ, M)
-    zrange = np.linspace(0, ξ, N)
     T, R, Z = np.meshgrid(
-        np.linspace(0, T, Nsteps),
-        rrange,
-        zrange,
+        trange:=np.linspace(0, T, Nsteps),
+        rrange:=np.linspace(0, ξ, M),
+        zrange:=np.linspace(0, ξ, N),
         indexing='ij'
     )
-
-    concentration_vectorized = np.vectorize(lambda t, r, z: concentration(t, r, z, h, ξ, r_0, S=S, P=P))
+    concentration_vectorized = np.vectorize(lambda t, r, z: concentration(t, r, z, h, ξ, r_0, S=S/1e13, P=P))
     C_ana = concentration_vectorized(T, R, Z)
+    C_ana[0] = np.zeros((N, M)) # Avoiding unnecessarily large values
 
+    # Plot:
     sliders = plot_with_slider_2D(
-        [ C_FDM,  C_ana     ],
-        ["FDM", "Analytical"],
-        rrange
+        arrs=[C_FDM, C_ana],
+        slider_labels=["t", "z"],
+        plot_labels=["FDM", "Analytic"],
+        axis_to_plot=2,
+        xrange=zrange,
+        xlabel="$r$",
+        ylabel="c($t, r, z)$"
     )
 
     return sliders

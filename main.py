@@ -9,8 +9,8 @@ def main() -> None:
     h = h=15e-9/M
     k = 1e-9/500
     # system = test_DiffusionFDM2D(50, h=15e-9/M, k=1e-9/500, M=M, N=N, type="backward")
-    # plot_simple_diffusion_solution(1, N=25, M=60)
-    sliders = comparison(100, h, k, N=10, M=10)
+    plot_simple_diffusion_solution(1, N=25, M=60, h=h, k=k, S=100, r_0=0.25*M*h)
+    # sliders = comparison(100, h, k, N=N, M=M)
     plt.show()
 
 

@@ -5,7 +5,7 @@ from Numeric.DiffusionFDM2D import DiffusionFDM2D
 
 class DiffusionReactionFDM2D(DiffusionFDM2D):
 
-    def __init__(self, max_timestep: int, h: float, k: float, κ: float = 8e-7, S: float = 500, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None, has_diffusion: bool = True):
+    def __init__(self, max_timestep: int, h: float, k: float, κ: float = 8e-7, r: float = 0, S: float = 500, N: int = 10, M: int = 30, type: str = "backward", IC: np.ndarray = None, has_diffusion: bool = True):
         """
         Args:
             max_timestep (int): The maximum timestep
@@ -21,13 +21,39 @@ class DiffusionReactionFDM2D(DiffusionFDM2D):
         Returns:
             None
         """
-        super().__init__(max_timestep, h, k, κ, S, N, M, type, IC)
         self.__has_diffusion = has_diffusion
+        super().__init__(max_timestep, h, k, κ, S, N, M, type, IC)
       
     
     def _construct_matrix(self, type: str) -> np.ndarray:
-        if self.__has_diffusion:
-            A = super()._construct_matrix(type)
-        else:
-            A = np.identity(self.__P) ##???
+        return super()._construct_system_matrix() if self.__has_diffusion else None
+        
     
+    def set_solution(self, t: int, sol: np.ndarray) -> None:
+        """
+        Sets the solution at timestep t.
+
+        Args:
+            t         (int): Timestep at which to set the solution
+            sol (NxM array): Solution to set
+        Returns:
+            None
+        """
+        self._solution[t] = sol
+    
+
+    def get_solution(self, t: int) -> np.ndarray:
+        """
+        Gets the solution at timestep t.
+
+        Args:
+            t (int): Timestep at which to get the solution
+        Returns:
+            Solution at time t (NxM array)
+        """
+        return self._solution[t]
+
+
+    @property
+    def A(self) -> np.ndarray:
+        return self._A

@@ -30,7 +30,8 @@ class DiffusionFDM2D:
         self.__κ = κ
         self._N = N
         self._M = M
-        self.__P = M*N # Total amount of gridpoints
+        self._P = M*N # Total amount of gridpoints
+        self.__r = self.__κ*( self.__k / self.__h**2 )
 
         self._A = self._construct_matrix(type)
         self._solution = np.zeros((max_timestep, N, M))
@@ -95,7 +96,7 @@ class DiffusionFDM2D:
         Returns:
             System matrix A (constant with time)
         """
-        A = np.zeros((self.__P, self.__P))
+        A = np.zeros((self._P, self._P))
 
         # Precalculating matrices to accelerate runtime
         matrix_bndry = self.__construct_submatrix(boundary=True )
@@ -124,13 +125,12 @@ class DiffusionFDM2D:
         """
         # System matrix for diffusion:
         A = self._construct_system_matrix()
-        r = self.__κ*( self.__k / self.__h**2 )
 
         # Returning the correct type of matrix
         if   type == "forward":
-            return np.identity(self.__P) + r*A
+            return np.identity(self._P) + self.__r*A
         elif type == "backward":
-            return np.linalg.solve(np.identity(self.__P) - r*A, np.identity(self.__P))
+            return np.linalg.solve(np.identity(self._P) - self.__r*A, np.identity(self._P))
     
 
     def solve(self) -> None:
@@ -147,6 +147,14 @@ class DiffusionFDM2D:
 
         self._solved = True
     
+
+    def set_solved(self) -> None:
+        """
+        For external classes solving systems.
+        Sets the system to solved.
+        """
+        self._solved = True
+
 
     def _assert_solved(self) -> None:
         """
@@ -188,3 +196,8 @@ class DiffusionFDM2D:
     def solution(self) -> np.ndarray:
         self._assert_solved()
         return self._solution
+
+    
+    @property
+    def r(self) -> float:
+        return self.__r

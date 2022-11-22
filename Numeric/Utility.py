@@ -61,7 +61,7 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
 
 
     # Adding slider:
-    slider_ax = divider.append_axes('top', size='5%', pad=0.05)
+    slider_ax = divider.append_axes('top', size='5%', pad=0.15)
     slider = Slider(
         ax=slider_ax,
         label="Timestep",
@@ -171,3 +171,114 @@ def get_line_along_axis(arr: np.ndarray, axis: int, indices: tuple) -> np.ndarra
     slc = list(indices)
     slc.insert(axis, slice(None))
     return arr[tuple(slc)]
+
+
+class DiffusionReaction2DStdConfig:
+
+    """
+    Standard config for SolvingDiffusionReaction class
+    """
+
+    def __init__(self, particle_type: str) -> None:
+        """
+        Args:
+            particle_type (str): Either N, R or Rb
+        """
+        self.__max_timestep = 25
+        self.__N = 40
+        self.__M = 40
+        self.__h = 15e-9/self.__N
+        self.__k = 1e-9/self.__max_timestep
+        self.__κ = 8e-7
+        self.__r = 220e-9
+
+        self.__particle_type = particle_type
+        if   particle_type == "N": self.__S = 5000/(self.__r**2*np.pi*self.__h)
+        elif particle_type == "R": self.__S = (1000e-6)/self.__h
+        elif particle_type == "Rb": self.__S = 0
+        else: raise RuntimeError("DiffusionReaction2DStdConfig: Invalid particle type")
+
+        self.__IC = self.__construct_IC()
+
+        self.__config = self.__construct_config()
+
+
+    def __construct_config(self):
+        """
+        Constructs config dict.
+
+        Args:
+            None
+        Returns:
+            None
+        """
+        return {
+            'max_timestep': self.__max_timestep,
+            'N': self.__N,
+            'M': self.__M,
+            'h': self.__h,
+            'k': self.__k,
+            'κ': self.__κ,
+            'r': self.__r,
+            'S': self.__S,
+            'IC': self.__IC
+        }
+
+
+    def get_basic_parameters(self) -> tuple:
+        """
+        Returns the basic parameters of the config:
+        - N and M
+        - h and k
+
+        Args:
+            None
+        Returns:
+            None
+        """
+        return self.__max_timestep, self.__N, self.__M, self.__h, self.__k
+
+    
+    def __construct_IC(self) -> np.ndarray:
+        """
+        Generates IC depending on the particle type.
+
+        Args:
+            None
+        Returns:
+            IC (NxM array)
+        """
+        IC = np.zeros((self.__N, self.__M))
+
+        if self.__particle_type in ('N', 'R'):
+            m_r0 = int(0.25*self.__M)
+            n_ε  = max(int(0.01*self.__N), 1)
+            if self.__particle_type == 'N':
+                IC[:n_ε, :m_r0] = self.__S / (n_ε + m_r0)
+            elif self.__particle_type == 'R':
+                IC[-n_ε:, :m_r0] = self.__S / (n_ε + m_r0)
+        
+        return IC
+    
+
+    def set_parameter(self, parameter: str, val) -> None:
+        """
+        Sets the given parameters.
+        """
+        self.__config[parameter] = val
+
+        # Updating dependent variables:
+        self.__h = 15e-9/self.__config['N']
+        self.__k = 1e-9/self.__config['max_timestep']
+        if   self.__particle_type == "N": self.__S = 5000/(self.__config['r']**2*np.pi*self.__config['h'])
+        elif self.__particle_type == "R": self.__S = (1000e-6)/self.__config['h']
+        elif self.__particle_type == "Rb": self.__S = 0
+        self.__IC = self.__construct_IC()
+
+        # Updating dependent dictionary
+        self.__config = self.__construct_config()
+
+    
+    @property
+    def config(self) -> dict:
+        return self.__config

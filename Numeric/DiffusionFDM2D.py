@@ -55,7 +55,7 @@ class DiffusionFDM2D:
         Returns:
             Initial condition (NxM Array)
         """
-        m_r0 = int(0.25*self._M)
+        m_r0 = int(15*self._N) # Radius of synaptic cleft is approximately 15 times the height
         n_ε  = max(int(0.01*self._N), 1)
         IC = np.zeros((self._N, self._M))
         IC[:n_ε, :m_r0] = S / (n_ε + m_r0)
@@ -165,7 +165,7 @@ class DiffusionFDM2D:
             raise RuntimeError("DiffusionFDM2D: System has note yet been solve. Please call the \'solve()\' method.")
 
     
-    def plot(self, timestep: int = -1, slider: bool = False, ax: plt.Axes = None) -> None:
+    def plot(self, timestep: int = -1, slider: bool = False, ax: plt.Axes = None, colorbar: bool = False) -> None:
         """
         Plots the solution in a 3D surface plot.
 
@@ -173,6 +173,7 @@ class DiffusionFDM2D:
             Timestep       (int): Timestep to plot, defaults to last.
             slider        (bool): Whether or not to plot with slider
             ax (Matplotlib Axes)
+            colorbar      (bool)
         Returns:
             None
         """
@@ -189,7 +190,7 @@ class DiffusionFDM2D:
             ax.set_ylabel("$z$")
         
         else:
-            self.__slider = plot_with_silder(self._solution, xlabel="$r$", ylabel="$z$", log=True, ax=ax)
+            self.__slider = plot_with_silder(self._solution, xlabel="$r$", ylabel="$z$", log=True, ax=ax, cb=colorbar)
     
 
     @property

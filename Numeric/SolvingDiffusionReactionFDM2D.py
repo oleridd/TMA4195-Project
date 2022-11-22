@@ -21,7 +21,8 @@ class SolvingDiffusionReactionFDM2D():
 
         # Constructing reaction constants:
         self.__max_timestep, self.__N, self.__M, self.__h, self.__k = conf_params.get_basic_parameters()
-        self.__k1 = (4*10**6)/(6.022*10**23)*(config_N['r']**2*np.pi*config_N['h'])/(0.001*config_N['M'])
+        # self.__k1 = (4e6)/(6.022e23)*(config_N['r']**2*np.pi*config_N['h'])/(0.001*config_N['M'])
+        self.__k1 = (4e6)/((6.022e23)*(config_N['r']**2*np.pi*self.__N*self.__h*1000))
         self.__k2 = 5
     
 
@@ -39,7 +40,7 @@ class SolvingDiffusionReactionFDM2D():
         B = np.identity(P) - self.__neuro_particle.r*A
 
         for t in range(1, self.__max_timestep):
-            
+            print(t)
             prev_N  = self.__neuro_particle.get_solution(t-1).flatten()
             prev_R  = self.__recep_particle.get_solution(t-1).flatten()
             prev_Rb = self.__rebnd_particle.get_solution(t-1).flatten()
@@ -48,7 +49,7 @@ class SolvingDiffusionReactionFDM2D():
             self.__neuro_particle.set_solution(
                 t,
                 (
-                    np.linalg.solve(B + self.__k*self.__k1*prev_R*np.identity(P), prev_N + self.__k2*prev_Rb)
+                    curr_N:=np.linalg.solve(B, prev_N - self.__k1*self.__k*prev_N*prev_R + self.__k2*prev_Rb)
                 ).reshape((self.__N, self.__M))
             )
 
@@ -56,7 +57,7 @@ class SolvingDiffusionReactionFDM2D():
             self.__recep_particle.set_solution(
                 t,
                 (
-                          prev_R  + self.__k*((-self.__k1*prev_N*prev_R) + (self.__k2*prev_Rb))
+                          curr_R:=prev_R  + self.__k*((-self.__k1*prev_N*prev_R) + (self.__k2*prev_Rb))
                 ).reshape((self.__N, self.__M))
             )
 
@@ -72,13 +73,33 @@ class SolvingDiffusionReactionFDM2D():
         self.__recep_particle.set_solved()
         self.__rebnd_particle.set_solved()
 
+    
+        
+    def plot_norm_development(self) -> None:
+        """
+        Plots the norm of all three matrices over time.
+        Used for troubleshooting.
+
+        Args:
+            None
+        Returns:
+            None
+        """
+        norm_N  = np.linalg.norm(self.__neuro_particle.solution, axis=(1, 2))
+        norm_R  = np.linalg.norm(self.__recep_particle.solution, axis=(1, 2))
+        norm_Rb = np.linalg.norm(self.__rebnd_particle.solution, axis=(1, 2))
+        plt.plot(norm_N, label="$c_N$")
+        plt.plot(norm_R, label="$c_R$")
+        plt.plot(norm_Rb, label="$c_{R_b}$")
+        plt.legend()
+
 
     def plot(self) -> None:
         """
         Plots the solutions for concentration of all of the different
         particles.
         """
-        fig, ax = plt.subplots(1, 3, figsize=(16, 8))
+        fig, ax = plt.subplots(3, 1, figsize=(6, 12))
         self.__sliders = []
 
         self.__sliders.append(self.__neuro_particle.plot(slider=True, ax=ax[0]))

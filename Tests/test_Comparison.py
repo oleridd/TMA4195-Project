@@ -34,13 +34,14 @@ def comparison(Nsteps: int, h: float, k: float, S: float = 100, N: int = 40, M: 
     ξ =      (N-1)*h
     T = (Nsteps-1)*k
     r_0 = 0.25*ξ
+    ε = 0.1*h
     T, R, Z = np.meshgrid(
         trange:=np.linspace(0, T, Nsteps),
         rrange:=np.linspace(0, ξ, M),
         zrange:=np.linspace(0, ξ, N),
         indexing='ij'
     )
-    concentration_vectorized = np.vectorize(lambda t, r, z: concentration(t, r, z, h, ξ, r_0, S=S/1e13, P=P))
+    concentration_vectorized = np.vectorize(lambda t, r, z: concentration(t, r, z, h, ξ, r_0, ε, P=P))
     C_ana = concentration_vectorized(T, R, Z)
     C_ana[0] = np.zeros((N, M)) # Avoiding unnecessarily large values
 

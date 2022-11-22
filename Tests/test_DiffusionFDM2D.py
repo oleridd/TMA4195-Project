@@ -4,7 +4,7 @@ from Numeric.DiffusionFDM2D import DiffusionFDM2D
 from Numeric.DiffusionFDM2DWithSink import DiffusionFDM2DWithSink
 
 
-def test_DiffusionFDM2D(timestep: int, h: float, k: float, N: int = 10, M: int = 30, type: str = "backward") -> None:
+def test_DiffusionFDM2D(timestep: int, h: float, k: float, N: int = 10, M: int = 30, S: float = 1, type: str = "backward") -> None:
     """
     Testing the DiffusionFDM2D class by constructing and plotting.
 
@@ -18,7 +18,7 @@ def test_DiffusionFDM2D(timestep: int, h: float, k: float, N: int = 10, M: int =
     Returns:
         None
     """
-    system = DiffusionFDM2D(max_timestep=timestep+1, h=h, k=k, S=100, N=N, M=M, type=type)
+    system = DiffusionFDM2D(max_timestep=timestep+1, h=h, k=k, S=S, N=N, M=M, type=type)
     system.solve()
     system.plot(timestep, slider=True)
     return system

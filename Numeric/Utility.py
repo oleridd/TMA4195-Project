@@ -36,7 +36,7 @@ def get_absorption_frac(sim, R: float, ε: float) -> float:
     return np.sum(np.any(conditional, axis=0))/pos.shape[1] # If at least one timestep is true, set to true
 
 
-def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", log: bool = False, ax: plt.Axes = None) -> Slider:
+def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", log: bool = False, ax: plt.Axes = None, cb: bool = False) -> Slider:
     """
     Given a 3D numpy array, plots arr along the 0th axis on a 3D
     plot with xrange and yrange.
@@ -47,6 +47,7 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
         ylabel      (string)
         log           (bool): Whether to  apply log to plot
         ax (Matplotlib Axes)
+        cb            (bool): Whether to include a colorbar
     Returns:
         None
     """
@@ -56,8 +57,9 @@ def plot_with_silder(arr: np.ndarray, xlabel: str = "$x$", ylabel: str = "$y$", 
 
     divider = make_axes_locatable(ax)
     im = ax.imshow(arr[0])
-    # colorbar_ax = divider.append_axes('left', size='5%', pad=0.15)
-    # plt.colorbar(im, ax=colorbar_ax, format=LogFormatterMathtext())
+    if cb:
+        colorbar_ax = divider.append_axes('left', size='5%', pad=0.15)
+        plt.colorbar(im, ax=colorbar_ax)
 
 
     # Adding slider:
@@ -185,16 +187,15 @@ class DiffusionReaction2DStdConfig:
             particle_type (str): Either N, R or Rb
         """
         self.__max_timestep = 25
-        self.__N = 40
-        self.__M = 40
+        self.__N = 25
+        self.__M = 500
         self.__h = 15e-9/self.__N
         self.__k = 1e-9/self.__max_timestep
         self.__κ = 8e-7
         self.__r = 220e-9
-
         self.__particle_type = particle_type
         if   particle_type == "N": self.__S = 5000/(self.__r**2*np.pi*self.__h)
-        elif particle_type == "R": self.__S = (1000e-6)/self.__h
+        elif particle_type == "R": self.__S = (1000)/(np.pi*(self.__r*1e6)**2)
         elif particle_type == "Rb": self.__S = 0
         else: raise RuntimeError("DiffusionReaction2DStdConfig: Invalid particle type")
 
@@ -251,12 +252,12 @@ class DiffusionReaction2DStdConfig:
         IC = np.zeros((self.__N, self.__M))
 
         if self.__particle_type in ('N', 'R'):
-            m_r0 = int(0.25*self.__M)
-            n_ε  = max(int(0.01*self.__N), 1)
+            m_r0 = int(self.__r/self.__h)
+            n_ε  = max(int(0.25*self.__N), 1)
             if self.__particle_type == 'N':
                 IC[:n_ε, :m_r0] = self.__S / (n_ε + m_r0)
             elif self.__particle_type == 'R':
-                IC[-n_ε:, :m_r0] = self.__S / (n_ε + m_r0)
+                IC[-int(n_ε*4):, :int(m_r0*4)] = self.__S / (n_ε + m_r0)
         
         return IC
     

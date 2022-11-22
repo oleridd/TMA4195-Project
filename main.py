@@ -7,12 +7,14 @@ from Numeric.SolvingDiffusionReactionFDM2D import SolvingDiffusionReactionFDM2D
 
 
 def main() -> None:
-    #N, M = 40, 40
-    #h = h=15e-9/M
-    #k = 1e-9/500
-    # system = test_DiffusionFDM2D(50, h=15e-9/M, k=1e-9/500, M=M, N=N, type="backward")
-    # plot_simple_diffusion_solution(1, N=25, M=60)
-    # sliders = comparison(100, h, k, N=10, M=10)
+    max_timestep = 100
+    N, M = 25, 500
+    h = h=15e-9/N
+    k = 1e-9/max_timestep
+    S = 1.057e-13 # mol/l
+    # system = test_DiffusionFDM2D(timestep=max_timestep, h=h, k=k, M=M, N=N, S=S, type="backward")
+    # plot_simple_diffusion_solution(t=1e-9)
+    # sliders = comparison(100, h, k, N=40, M=40, S=S)
     system = test_SolvingDiffusionReactionFDM2D()
     plt.show()
 

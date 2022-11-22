@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from Tests.test_DiffusionFDM2D import test_DiffusionFDM2D, test_DiffusionFDM2DWithSink
 from Tests.test_Comparison import comparison
 from Numeric.simple_diffusion_solution import plot_simple_diffusion_solution
+from Numeric.DiffusionFDM2D import SolvingDiffusionReactionFDM2D
 
 
 def main() -> None:
@@ -12,6 +13,11 @@ def main() -> None:
     # plot_simple_diffusion_solution(1, N=25, M=60)
     sliders = comparison(100, h, k, N=10, M=10)
     plt.show()
+    system=SolvingDiffusionReactionFDM2D()
+    system.plot()
+    
+
+
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import numpy as np
 
-from Numeric.DiffusionFDM2D import DiffusionReactionFDM2D
+from Numeric.DiffusionReactionFDM2D import DiffusionReactionFDM2D
 
 class SolvingDiffusionReactionFDM2D():
     
@@ -12,14 +12,14 @@ class SolvingDiffusionReactionFDM2D():
         self.__k=1e-9/self.__max_timestep
         self.__κ=8e-7
         self.__r=220e-9
-        self.__k1=(10**3*6.022*10**23)/(10**(-3)/self.__k)
-        self.__k2=(10**(-2)*6.022*10**23)/(10**(-3)/self.__k)
+        self.__k1=(4*10**6)/(6.022*10**23)*(self.__r**2*np.pi*self.__h)/(0.001*self.__M)
+        self.__k2=5
 
         self.__SN=5000/(self.__r**2*np.pi*self.__h)
         self.__SR=(1000e-6)/self.__h
 
-        self.__IC_Rb=IC = np.zeros((self._N, self._M))
-        self.__IC_R=IC = np.zeros((self._N, self._M))
+        self.__IC_Rb=IC = np.zeros((self.__N, self.__M))
+        self.__IC_R=IC = np.zeros((self.__N, self.__M))
 
         m_r0 = int(0.25*self._M)
         n_ε  = max(int(0.01*self._N), 1)
@@ -39,6 +39,14 @@ class SolvingDiffusionReactionFDM2D():
         self.__N._solved = True
         self.__R._solved = True
         self.__Rb._solved = True
+
+    def plot(self):
+        self.__N.plot()
+        self.__R.plot()
+        self.__Rb.plot()
+        
+
+
 
 
 

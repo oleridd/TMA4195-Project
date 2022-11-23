@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from Numeric.DiffusionFDM2D import DiffusionFDM2D
+from Numeric.FDM.DiffusionFDM2D import DiffusionFDM2D
 from Numeric.DiffusionFDM2DWithSink import DiffusionFDM2DWithSink
 
 

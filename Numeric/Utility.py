@@ -132,16 +132,16 @@ def plot_with_slider_2D(arrs: list, slider_labels: list, plot_labels: list, axis
     # Adding sliders:
     sliders = []
     divider = make_axes_locatable(ax) # Used to add slider axes
-    for i, lab in zip(range(1, len(axes)), slider_labels):
+    for axis, lab in zip(np.delete(axes, axis_to_plot), slider_labels):
         slider_ax = divider.append_axes('top', size='5%', pad=0.1)
         sliders.append(
             Slider(
                 ax=slider_ax,
                 label=lab,
                 valmin=0,
-                valmax=axes[i],
+                valmax=axis,
                 valinit=0,
-                valstep=np.arange(axes[i])
+                valstep=np.arange(axis)
             )
         )
 

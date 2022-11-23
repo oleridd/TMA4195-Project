@@ -55,8 +55,9 @@ class DiffusionFDM2D:
         Returns:
             Initial condition (NxM Array)
         """
-        m_r0 = int(15*self._N) # Radius of synaptic cleft is approximately 15 times the height
-        n_ε  = max(int(0.01*self._N), 1)
+        #m_r0 = int(15*self._N) # Radius of synaptic cleft is approximately 15 times the height
+        m_r0 = int(0.4*self._M)
+        n_ε  = max(int(0.1*self._N), 1)
         IC = np.zeros((self._N, self._M))
         IC[:n_ε, :m_r0] = S / (n_ε + m_r0)
         return IC

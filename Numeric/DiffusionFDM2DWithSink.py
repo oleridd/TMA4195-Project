@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Callable
-from Numeric.DiffusionFDM2D import DiffusionFDM2D
+from Numeric.FDM.DiffusionFDM2D import DiffusionFDM2D
 from Numeric.Utility import plot_with_silder
 
 

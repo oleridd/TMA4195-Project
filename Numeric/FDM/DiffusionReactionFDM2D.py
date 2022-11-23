@@ -1,6 +1,6 @@
 import numpy as np
 
-from Numeric.DiffusionFDM2D import DiffusionFDM2D
+from Numeric.FDM.DiffusionFDM2D import DiffusionFDM2D
 
 
 class DiffusionReactionFDM2D(DiffusionFDM2D):

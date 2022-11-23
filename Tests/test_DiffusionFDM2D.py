@@ -20,7 +20,7 @@ def test_DiffusionFDM2D(timestep: int, h: float, k: float, N: int = 10, M: int =
     """
     system = DiffusionFDM2D(max_timestep=timestep+1, h=h, k=k, S=S, N=N, M=M, type=type)
     system.solve()
-    system.plot(timestep, slider=True)
+    system.plot(timestep=5, slider=False)
     return system
 
 

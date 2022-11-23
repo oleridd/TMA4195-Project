@@ -1,6 +1,6 @@
 import numpy as np
 
-from Numeric.DiffusionFDM2D import DiffusionFDM2D
+from Numeric.FDM.DiffusionFDM2D import DiffusionFDM2D
 from Numeric.simple_diffusion_solution import concentration
 from Numeric.Utility import plot_with_slider_2D
 

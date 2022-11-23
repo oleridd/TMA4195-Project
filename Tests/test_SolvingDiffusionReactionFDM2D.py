@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from Numeric.SolvingDiffusionReactionFDM2D import SolvingDiffusionReactionFDM2D
+from Numeric.FDM.SolvingDiffusionReactionFDM2D import SolvingDiffusionReactionFDM2D
 
 
 def test_SolvingDiffusionReactionFDM2D() -> SolvingDiffusionReactionFDM2D:

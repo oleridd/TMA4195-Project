@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-from Numeric.DiffusionReactionFDM2D import DiffusionReactionFDM2D
+from Numeric.FDM.DiffusionReactionFDM2D import DiffusionReactionFDM2D
 from Numeric.Utility import DiffusionReaction2DStdConfig
 
 
